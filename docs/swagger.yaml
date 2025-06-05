@@ -1,0 +1,809 @@
+definitions:
+  models.Advertisement:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      link:
+        type: string
+      title:
+        type: string
+    type: object
+  models.Banner:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      title:
+        type: string
+    type: object
+  models.BannerCarousel:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      title:
+        type: string
+    type: object
+  models.Category:
+    properties:
+      id:
+        type: integer
+      image:
+        type: string
+      title:
+        type: string
+    type: object
+  models.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.News:
+    properties:
+      author:
+        $ref: '#/definitions/models.User'
+      author_id:
+        type: integer
+      content:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      secondImage:
+        type: string
+      title:
+        type: string
+    type: object
+  models.TokenResponse:
+    properties:
+      access_token:
+        type: string
+    type: object
+  models.User:
+    properties:
+      id:
+        type: integer
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserLoginInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.UserRegisterInput:
+    properties:
+      password:
+        type: string
+      role:
+        enum:
+        - user
+        - writer
+        - admin
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - role
+    - username
+    type: object
+info:
+  contact: {}
+  description: News API
+  title: News API
+  version: "1.0"
+paths:
+  /advertisements:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get Advertisements API
+      tags:
+      - advertisements
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Ad title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Ad link
+        in: formData
+        name: link
+        required: true
+        type: string
+      - description: Image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Advertisement'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new advertisement
+      tags:
+      - advertisements
+  /advertisements/{id}:
+    delete:
+      parameters:
+      - description: Advertisement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Advertisement'
+        "404":
+          description: Advertisement not found
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete advertisement by ID
+      tags:
+      - advertisements
+    get:
+      parameters:
+      - description: Advertisement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Advertisement'
+        "404":
+          description: Advertisement not found
+          schema:
+            type: string
+      summary: Get ad details by ID
+      tags:
+      - advertisements
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user and return JWT token
+      parameters:
+      - description: User credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLoginInput'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/models.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Register
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user and return JWT token
+      parameters:
+      - description: User credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Register
+      tags:
+      - auth
+  /banners:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get Banners API
+      tags:
+      - banners
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Banner title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Banner description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Banner'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new banner
+      tags:
+      - banners
+  /banners/{id}:
+    delete:
+      parameters:
+      - description: Banner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Banner'
+        "404":
+          description: Banner not found
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete banner details by ID
+      tags:
+      - banners
+    get:
+      parameters:
+      - description: Banner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get Baner API
+      tags:
+      - banners
+    patch:
+      parameters:
+      - description: Banner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Banner Title
+        in: formData
+        name: title
+        type: string
+      - description: Banner description
+        in: formData
+        name: description
+        type: string
+      - description: Banner Image
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Banner'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: Banner not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update banner details by ID
+      tags:
+      - banners
+  /banners/carousel:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get Banners Carousel API
+      tags:
+      - banners-carousel
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Banner title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Banner description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.BannerCarousel'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new banner-carousel
+      tags:
+      - banners-carousel
+  /banners/carousel/{id}:
+    delete:
+      parameters:
+      - description: Banner Carousel ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BannerCarousel'
+        "404":
+          description: Banner Carousel not found
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete banner carousel details by ID
+      tags:
+      - banners-carousel
+    get:
+      parameters:
+      - description: Banner Carousel ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get Baner Carousel API
+      tags:
+      - banners-carousel
+    patch:
+      parameters:
+      - description: Banner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Banner Carousel Title
+        in: formData
+        name: title
+        type: string
+      - description: Banner Carousel description
+        in: formData
+        name: description
+        type: string
+      - description: Banner Carousel Image
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BannerCarousel'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: Banner not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update banner Carousel details by ID
+      tags:
+      - banners-carousel
+  /categories:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get Categories API
+      tags:
+      - categories
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Category title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Category'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new category
+      tags:
+      - categories
+  /categories/{id}:
+    delete:
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "404":
+          description: Category not found
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete category details by ID
+      tags:
+      - categories
+    get:
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "404":
+          description: Category not found
+          schema:
+            type: string
+      summary: Get category details by ID
+      tags:
+      - categories
+    patch:
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category Title
+        in: formData
+        name: title
+        type: string
+      - description: Category Image
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: Category not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update category details by ID
+      tags:
+      - categories
+  /follow/{writer_id}:
+    post:
+      parameters:
+      - description: ID of the writer
+        in: path
+        name: writer_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Successfully followed
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: User follows a writer
+      tags:
+      - follows
+  /news:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get News API
+      tags:
+      - news
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: News title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: News content
+        in: formData
+        name: content
+        required: true
+        type: string
+      - description: Primary image
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: Secondary image
+        in: formData
+        name: secondImage
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.News'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new news article
+      tags:
+      - news
+  /news/{id}:
+    get:
+      parameters:
+      - description: News ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.News'
+        "404":
+          description: News not found
+          schema:
+            type: string
+      summary: Get news details by ID
+      tags:
+      - news
+  /news/mine:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.News'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get Writer's Own News
+      tags:
+      - news
+  /unfollow/{writer_id}:
+    post:
+      parameters:
+      - description: ID of the writer
+        in: path
+        name: writer_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Successfully unfollowed
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: User unfollows a writer
+      tags:
+      - follows
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
